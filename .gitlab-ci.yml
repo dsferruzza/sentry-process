@@ -1,0 +1,20 @@
+variables:
+  DEBIAN_FRONTEND: noninteractive
+  RUST_VERSION: "1.32"
+
+build:
+  stage: build
+  image: rust:$RUST_VERSION
+  script:
+    - rustc --version && cargo --version
+    - cargo build --release
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - target/
+  artifacts:
+    name: "$CI_BUILD_NAME"
+    paths:
+      - target/release/sentry-process
+  tags:
+    - docker
