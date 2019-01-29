@@ -5,8 +5,13 @@ variables:
 build:
   stage: build
   image: rust:$RUST_VERSION
-  script:
+  before_script:
     - rustc --version && cargo --version
+    - rustup component add clippy
+    - rustup component add rustfmt
+  script:
+    - cargo fmt --all -- --check
+    - cargo clippy --all-targets --all-features -- -D warnings
     - cargo build --release
   cache:
     key: "$CI_COMMIT_REF_SLUG"
