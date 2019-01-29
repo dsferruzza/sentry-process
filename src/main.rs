@@ -4,7 +4,7 @@ fn main() {
         None => {
             eprintln!("You must specify at least one argument (the program to run).");
             std::process::exit(127);
-        },
+        }
         Some(program) => {
             let args = &arguments[1..];
             let sentry = sentry_init(program, args);
@@ -14,7 +14,7 @@ fn main() {
                 eprintln!("Cannot enable Sentry integration.");
                 std::process::exit(1);
             }
-        },
+        }
     }
 }
 
@@ -24,36 +24,46 @@ fn sentry_init(program: &str, args: &[String]) -> sentry::internals::ClientInitG
     static DEFAULT_SENTRY_PROCESS_NAME: &str = "sentry-process";
     static DEFAULT_SENTRY_PROCESS_VERSION: &str = "???";
 
-    let user_agent: std::borrow::Cow<'static, _> = match (option_env!("CARGO_PKG_NAME"), option_env!("CARGO_PKG_VERSION")) {
+    let user_agent: std::borrow::Cow<'static, _> = match (
+        option_env!("CARGO_PKG_NAME"),
+        option_env!("CARGO_PKG_VERSION"),
+    ) {
         (Some(name), Some(version)) => {
             let mut agent_string = String::new();
             agent_string.push_str(name);
             agent_string.push_str("@");
             agent_string.push_str(version);
             agent_string.into()
-        },
+        }
         (Some(name), None) => name.into(),
         (None, _) => "sentry-process".into(),
     };
 
-    let guard = sentry::init((dsn, sentry::ClientOptions {
-        before_send: Some(std::sync::Arc::new(Box::new(|mut event | {
-            let packages = event.sdk.clone().map(|old_sdk| old_sdk.packages.clone());
-            let sdk: sentry::protocol::ClientSdkInfo = sentry::protocol::ClientSdkInfo {
-                name: option_env!("CARGO_PKG_NAME").unwrap_or(DEFAULT_SENTRY_PROCESS_NAME).to_string(),
-                version: option_env!("CARGO_PKG_VERSION").unwrap_or(DEFAULT_SENTRY_PROCESS_VERSION).to_string(),
-                integrations: vec!(),
-                packages: packages.unwrap_or_else(|| vec!()),
-            };
-            event.sdk.replace(std::borrow::Cow::Owned(sdk));
-            Some(event)
-        }))),
-        user_agent,
-        debug: false,
-        shutdown_timeout: core::time::Duration::from_secs(10),
-        attach_stacktrace: false,
-        ..Default::default()
-    }));
+    let guard = sentry::init((
+        dsn,
+        sentry::ClientOptions {
+            before_send: Some(std::sync::Arc::new(Box::new(|mut event| {
+                let packages = event.sdk.clone().map(|old_sdk| old_sdk.packages.clone());
+                let sdk: sentry::protocol::ClientSdkInfo = sentry::protocol::ClientSdkInfo {
+                    name: option_env!("CARGO_PKG_NAME")
+                        .unwrap_or(DEFAULT_SENTRY_PROCESS_NAME)
+                        .to_string(),
+                    version: option_env!("CARGO_PKG_VERSION")
+                        .unwrap_or(DEFAULT_SENTRY_PROCESS_VERSION)
+                        .to_string(),
+                    integrations: vec![],
+                    packages: packages.unwrap_or_else(|| vec![]),
+                };
+                event.sdk.replace(std::borrow::Cow::Owned(sdk));
+                Some(event)
+            }))),
+            user_agent,
+            debug: false,
+            shutdown_timeout: core::time::Duration::from_secs(10),
+            attach_stacktrace: false,
+            ..Default::default()
+        },
+    ));
 
     sentry::configure_scope(|scope| {
         scope.set_tag("process", program);
@@ -64,8 +74,8 @@ fn sentry_init(program: &str, args: &[String]) -> sentry::internals::ClientInitG
 }
 
 fn run_program(program: &str, args: &[String]) {
-    use std::process::{Command, Stdio};
     use std::io::{self, BufRead, BufReader, BufWriter, Write};
+    use std::process::{Command, Stdio};
     use std::thread;
 
     let child_process = Command::new(program)
@@ -79,7 +89,7 @@ fn run_program(program: &str, args: &[String]) {
         Err(e) => {
             eprintln!("Could not start the '{}' command: {}.", program, e);
             std::process::exit(127);
-        },
+        }
         Ok(mut child) => {
             // Inspired from: https://andres.svbtle.com/convert-subprocess-stdout-stream-into-non-blocking-iterator-in-rust
 
@@ -120,17 +130,27 @@ fn run_program(program: &str, args: &[String]) {
             });
 
             let result = child.wait_with_output();
-            analyze_result(program, &result, stdout_thread.join().unwrap().as_str(), stderr_thread.join().unwrap().as_str());
-        },
+            analyze_result(
+                program,
+                &result,
+                stdout_thread.join().unwrap().as_str(),
+                stderr_thread.join().unwrap().as_str(),
+            );
+        }
     }
 }
 
-fn analyze_result(program: &str, result: &Result<std::process::Output, std::io::Error>, stdout: &str, stderr: &str) {
+fn analyze_result(
+    program: &str,
+    result: &Result<std::process::Output, std::io::Error>,
+    stdout: &str,
+    stderr: &str,
+) {
     match result {
         Err(e) => {
             eprintln!("An error occurred: {}", e);
             std::process::exit(1);
-        },
+        }
         Ok(output) => {
             if !output.status.success() {
                 let hub = sentry::Hub::current();
@@ -138,7 +158,10 @@ fn analyze_result(program: &str, result: &Result<std::process::Output, std::io::
                     scope.set_extra("stdout", stdout.to_owned().into());
                     scope.set_extra("stderr", stderr.to_owned().into());
                 });
-                hub.capture_message(format!("Process '{}' failed", program).as_str(), sentry::Level::Fatal);
+                hub.capture_message(
+                    format!("Process '{}' failed", program).as_str(),
+                    sentry::Level::Fatal,
+                );
                 if !hub.client().unwrap().close(None) {
                     eprintln!("Could not send events to Sentry.");
                     std::process::exit(1);
@@ -148,11 +171,11 @@ fn analyze_result(program: &str, result: &Result<std::process::Output, std::io::
                 None => {
                     eprintln!("Process terminated by signal.");
                     std::process::exit(1);
-                },
+                }
                 Some(code) => {
                     std::process::exit(code);
-                },
+                }
             }
-        },
+        }
     }
 }
