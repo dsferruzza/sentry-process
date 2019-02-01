@@ -67,7 +67,9 @@ fn sentry_init(program: &str, args: &[String]) -> sentry::internals::ClientInitG
 
     sentry::configure_scope(|scope| {
         scope.set_tag("process", program);
-        scope.set_tag("arguments", args.join(" "));
+        if !args.is_empty() {
+            scope.set_tag("arguments", args.join(" "));
+        }
     });
 
     guard
