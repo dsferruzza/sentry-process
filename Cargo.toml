@@ -1,6 +1,6 @@
 [package]
 name = "sentry-process"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["David Sferruzza <david.sferruzza@gmail.com>"]
 edition = "2018"
 description = "Report failed processes/scripts to Sentry"

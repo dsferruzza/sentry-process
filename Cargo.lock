@@ -1019,7 +1019,7 @@ dependencies = [
 
 [[package]]
 name = "sentry-process"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "sentry 0.15.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
