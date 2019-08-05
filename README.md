@@ -14,7 +14,7 @@ Report failed processes/scripts to Sentry.
 
 [Sentry](https://sentry.io) is a cool system that helps developers to aggregate, monitor and fix errors/exceptions in their own apps. It has integrations for many technologies so that reported errors can contain relevant informations.
 
-But sometimes it can be desirable to plug Sentry to an abritrary process. Such process can be a binary that was built without Sentry support, or a Bash script that runs every night on a server, for example.
+But sometimes it can be desirable to plug Sentry to an arbitrary process. Such process can be a binary that was built without Sentry support, or a Bash script that runs every night on a server, for example.
 
 With **Sentry Process** it is now easy to launch a process that will send an event to a Sentry instance whenever it fails!
 
