@@ -33,13 +33,7 @@ fn sentry_init(dsn: &str, program: &str, args: &[String]) -> sentry::internals::
         option_env!("CARGO_PKG_NAME"),
         option_env!("CARGO_PKG_VERSION"),
     ) {
-        (Some(name), Some(version)) => {
-            let mut agent_string = String::new();
-            agent_string.push_str(name);
-            agent_string.push_str("@");
-            agent_string.push_str(version);
-            agent_string.into()
-        }
+        (Some(name), Some(version)) => format!("{}@{}", name, version).into(),
         (Some(name), None) => name.into(),
         (None, _) => "sentry-process".into(),
     };
