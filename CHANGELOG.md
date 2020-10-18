@@ -2,8 +2,10 @@
 
 ## 2.0.0
 
+- Add a circular buffer to keep STDOUT/STDERR data below Sentry's size limit and truncate the oldest output first
 - Update dependencies (sentry: 0.15 → 0.20)
 - Change TLS implementation from OS native to Rustls
+- Fix STDOUT/STDERR line endings on Windows
 - Improve some error messages
 - Various refactoring
 

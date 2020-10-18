@@ -77,9 +77,19 @@ fn sentry_init(dsn: &str, program: &str, args: &[String]) -> sentry::internals::
 }
 
 fn run_program(program: &str, args: &[String]) {
+    use rbl_circular_buffer::CircularBuffer;
     use std::io::{self, BufRead, BufReader, BufWriter, Write};
     use std::process::{Command, Stdio};
     use std::thread;
+
+    #[cfg(windows)]
+    const LINE_ENDING: &'static str = "\r\n";
+    #[cfg(not(windows))]
+    const LINE_ENDING: &'static str = "\n";
+
+    const MAXIMUM_CHARACTERS: usize = 16_365;
+    const REMOVED_MESSAGE: &'static str = "[previous content removed because of size limits]\n";
+    const ACTUAL_MAXIMUM_CHARACTERS: usize = MAXIMUM_CHARACTERS - REMOVED_MESSAGE.as_bytes().len();
 
     let child_process = Command::new(program)
         .args(args)
@@ -102,16 +112,34 @@ fn run_program(program: &str, args: &[String]) {
                 let stderr = io::stderr();
                 let stderr = stderr.lock();
                 let mut stderr = BufWriter::new(stderr);
-                let mut final_stderr = String::new();
+
+                let mut buffer_counter: usize = 0;
+                let mut buffer = CircularBuffer::new(ACTUAL_MAXIMUM_CHARACTERS);
 
                 for line in reader.lines() {
-                    let data = format!("{}\n", line.unwrap());
+                    let data = format!("{}{}", line.unwrap(), LINE_ENDING);
                     stderr.write_all(data.as_bytes()).unwrap();
                     stderr.flush().unwrap();
-                    final_stderr.push_str(data.as_str());
+
+                    for byte in data.as_bytes() {
+                        let number_of_new_bytes = buffer.push(byte.to_owned());
+                        if buffer_counter < ACTUAL_MAXIMUM_CHARACTERS {
+                            buffer_counter += number_of_new_bytes;
+                        }
+                    }
                 }
 
-                final_stderr
+                let mut last_output_bytes = Vec::with_capacity(ACTUAL_MAXIMUM_CHARACTERS);
+                buffer.fill(&mut last_output_bytes);
+                format!(
+                    "{}{}",
+                    if buffer_counter > ACTUAL_MAXIMUM_CHARACTERS {
+                        REMOVED_MESSAGE
+                    } else {
+                        ""
+                    },
+                    String::from_utf8_lossy(&last_output_bytes)
+                )
             });
 
             let stdout = child.stdout.take().unwrap();
@@ -120,16 +148,34 @@ fn run_program(program: &str, args: &[String]) {
                 let stdout = io::stdout();
                 let stdout = stdout.lock();
                 let mut stdout = BufWriter::new(stdout);
-                let mut final_stdout = String::new();
+
+                let mut buffer_counter: usize = 0;
+                let mut buffer = CircularBuffer::new(ACTUAL_MAXIMUM_CHARACTERS);
 
                 for line in reader.lines() {
-                    let data = format!("{}\n", line.unwrap());
+                    let data = format!("{}{}", line.unwrap(), LINE_ENDING);
                     stdout.write_all(data.as_bytes()).unwrap();
                     stdout.flush().unwrap();
-                    final_stdout.push_str(data.as_str());
+
+                    for byte in data.as_bytes() {
+                        let number_of_new_bytes = buffer.push(byte.to_owned());
+                        if buffer_counter < ACTUAL_MAXIMUM_CHARACTERS {
+                            buffer_counter += number_of_new_bytes;
+                        }
+                    }
                 }
 
-                final_stdout
+                let mut last_output_bytes = Vec::with_capacity(ACTUAL_MAXIMUM_CHARACTERS);
+                buffer.fill(&mut last_output_bytes);
+                format!(
+                    "{}{}",
+                    if buffer_counter > ACTUAL_MAXIMUM_CHARACTERS {
+                        REMOVED_MESSAGE
+                    } else {
+                        ""
+                    },
+                    String::from_utf8_lossy(&last_output_bytes)
+                )
             });
 
             let result = child.wait_with_output();
