@@ -83,12 +83,12 @@ fn run_program(program: &str, args: &[String]) {
     use std::thread;
 
     #[cfg(windows)]
-    const LINE_ENDING: &'static str = "\r\n";
+    const LINE_ENDING: &str = "\r\n";
     #[cfg(not(windows))]
-    const LINE_ENDING: &'static str = "\n";
+    const LINE_ENDING: &str = "\n";
 
     const MAXIMUM_CHARACTERS: usize = 16_365;
-    const REMOVED_MESSAGE: &'static str = "[previous content removed because of size limits]\n";
+    const REMOVED_MESSAGE: &str = "[previous content removed because of size limits]\n";
     const ACTUAL_MAXIMUM_CHARACTERS: usize = MAXIMUM_CHARACTERS - REMOVED_MESSAGE.as_bytes().len();
 
     let child_process = Command::new(program)

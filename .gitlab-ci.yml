@@ -30,6 +30,7 @@ build_minimal:
   before_script:
     - rustc --version && cargo --version
   script:
+    - rm Cargo.lock
     - cargo build
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
