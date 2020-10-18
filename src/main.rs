@@ -1,26 +1,31 @@
 fn main() {
-    let arguments = std::env::args().skip(1).collect::<Vec<_>>();
-    match arguments.first() {
-        None => {
-            eprintln!("You must specify at least one argument (the program to run).");
-            std::process::exit(127);
-        }
-        Some(program) => {
-            let args = &arguments[1..];
-            let sentry = sentry_init(program, args);
-            if sentry.is_enabled() {
-                run_program(program, args);
-            } else {
-                eprintln!("Cannot enable Sentry integration.");
-                std::process::exit(1);
+    if let Ok(sentry_dsn) = std::env::var("SENTRY_DSN") {
+        let arguments = std::env::args().skip(1).collect::<Vec<_>>();
+        match arguments.first() {
+            None => {
+                eprintln!("You must specify at least one argument (the program to run).");
+                std::process::exit(127);
+            }
+            Some(program) => {
+                let args = &arguments[1..];
+                let sentry = sentry_init(sentry_dsn.as_str(), program, args);
+                if sentry.is_enabled() {
+                    run_program(program, args);
+                } else {
+                    eprintln!("Cannot enable Sentry integration.");
+                    std::process::exit(1);
+                }
             }
         }
+    } else {
+        eprintln!(
+            "Environment variable 'SENTRY_DSN' must be set in order for Sentry Process to work."
+        );
+        std::process::exit(1);
     }
 }
 
-fn sentry_init(program: &str, args: &[String]) -> sentry::internals::ClientInitGuard {
-    let dsn = std::env::var("SENTRY_DSN").expect("Env variable 'SENTRY_DSN' not set.");
-
+fn sentry_init(dsn: &str, program: &str, args: &[String]) -> sentry::internals::ClientInitGuard {
     static DEFAULT_SENTRY_PROCESS_NAME: &str = "sentry-process";
     static DEFAULT_SENTRY_PROCESS_VERSION: &str = "???";
 

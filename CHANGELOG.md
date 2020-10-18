@@ -4,6 +4,7 @@
 
 - Update dependencies (sentry: 0.15 → 0.20)
 - Change TLS implementation from OS native to Rustls
+- Improve some error messages
 
 ## 1.0.1
 
