@@ -41,4 +41,4 @@ Sentry Process needs Rust 1.32+ to be compiled.
 
 ## License
 
-MIT License Copyright (c) 2019 David Sferruzza
+MIT License Copyright (c) 2019-2020 David Sferruzza
