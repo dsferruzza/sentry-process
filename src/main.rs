@@ -42,21 +42,23 @@ fn sentry_init(program: &str, args: &[String]) -> sentry::internals::ClientInitG
     let guard = sentry::init((
         dsn,
         sentry::ClientOptions {
-            before_send: Some(std::sync::Arc::new(Box::new(|mut event| {
-                let packages = event.sdk.clone().map(|old_sdk| old_sdk.packages.clone());
-                let sdk: sentry::protocol::ClientSdkInfo = sentry::protocol::ClientSdkInfo {
-                    name: option_env!("CARGO_PKG_NAME")
-                        .unwrap_or(DEFAULT_SENTRY_PROCESS_NAME)
-                        .to_string(),
-                    version: option_env!("CARGO_PKG_VERSION")
-                        .unwrap_or(DEFAULT_SENTRY_PROCESS_VERSION)
-                        .to_string(),
-                    integrations: vec![],
-                    packages: packages.unwrap_or_else(|| vec![]),
-                };
-                event.sdk.replace(std::borrow::Cow::Owned(sdk));
-                Some(event)
-            }))),
+            before_send: Some(std::sync::Arc::new(Box::new(
+                |mut event: sentry::internals::protocol::latest::Event<'static>| {
+                    let packages = event.sdk.clone().map(|old_sdk| old_sdk.packages.clone());
+                    let sdk: sentry::protocol::ClientSdkInfo = sentry::protocol::ClientSdkInfo {
+                        name: option_env!("CARGO_PKG_NAME")
+                            .unwrap_or(DEFAULT_SENTRY_PROCESS_NAME)
+                            .to_owned(),
+                        version: option_env!("CARGO_PKG_VERSION")
+                            .unwrap_or(DEFAULT_SENTRY_PROCESS_VERSION)
+                            .to_owned(),
+                        integrations: vec![],
+                        packages: packages.unwrap_or_else(Vec::new),
+                    };
+                    event.sdk.replace(std::borrow::Cow::Owned(sdk));
+                    Some(event)
+                },
+            ))),
             user_agent,
             debug: false,
             shutdown_timeout: core::time::Duration::from_secs(10),

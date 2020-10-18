@@ -14,6 +14,6 @@ license = "MIT"
 gitlab = { repository = "dsferruzza/sentry-process", branch = "master" }
 
 [dependencies.sentry]
-version = "0.18.*"
+version = "0.20.1"
 default-features = false
-features = ["with_client_implementation", "with_default_transport", "with_device_info", "with_rust_info"]
+features = ["backtrace", "contexts", "panic", "reqwest", "rustls"]
