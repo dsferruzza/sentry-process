@@ -14,12 +14,26 @@ build:
     - cargo clippy --all-targets --all-features -- -D warnings
     - cargo build --release
   cache:
-    key: "$CI_COMMIT_REF_SLUG"
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - target/
   artifacts:
     name: "$CI_BUILD_NAME"
     paths:
       - target/release/sentry-process
+  tags:
+    - docker
+
+build_minimal:
+  stage: build
+  image: rust:1.32
+  before_script:
+    - rustc --version && cargo --version
+  script:
+    - cargo build
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - target/
   tags:
     - docker
