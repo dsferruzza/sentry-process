@@ -16,4 +16,4 @@ gitlab = { repository = "dsferruzza/sentry-process", branch = "master" }
 [dependencies.sentry]
 version = "0.20.1"
 default-features = false
-features = ["backtrace", "contexts", "panic", "reqwest", "rustls"]
+features = ["contexts", "panic", "reqwest", "rustls"]

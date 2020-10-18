@@ -847,7 +847,6 @@ checksum = "144e85b28d129f056ef91664fe2b985eade906d2838752c2f61c9f233cd98e4a"
 dependencies = [
  "httpdate",
  "reqwest",
- "sentry-backtrace",
  "sentry-contexts",
  "sentry-core",
  "sentry-panic",
