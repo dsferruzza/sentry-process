@@ -34,8 +34,8 @@ Sentry Process needs Rust 1.40+ to be compiled.
 
 ## Limitations
 
-- The process you want to run must terminate eventually. It does not make sense to use Sentry Process with processes that are designed to never die (like servers).
-- You will **not** get much details on _what_ failed (i.e. no stracktraces). This is the tradeoff here.
+- The process you want to run must terminate eventually. It may not make sense to use Sentry Process with processes that are designed to never die (like servers).
+- You will **not** get much details on _what_ failed (i.e. no stacktraces). This is the tradeoff here.
 - Sentry Process will send to your Sentry instance both standard output (`stdout`) and standard error (`stderr`) of the process you want to run (if it fails). Your Sentry instance might reject the report if this data is more than 200 kB (see [Sentry's documentation](https://docs.sentry.io/platforms/rust/enriching-events/context/)), so Sentry Process uses a circular buffer to ensure that this limit cannot be reached and the most recent outputs are sent with the report.
 
 ## License
