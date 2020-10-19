@@ -13,6 +13,10 @@ license = "MIT"
 [badges]
 gitlab = { repository = "dsferruzza/sentry-process", branch = "master" }
 
+[profile.release]
+lto = true
+codegen-units = 1
+
 [dependencies]
 rbl_circular_buffer = "0.1.2"
 
