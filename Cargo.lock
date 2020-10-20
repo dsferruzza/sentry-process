@@ -911,7 +911,7 @@ dependencies = [
 
 [[package]]
 name = "sentry-process"
-version = "1.0.2"
+version = "2.0.0"
 dependencies = [
  "rbl_circular_buffer",
  "sentry",
