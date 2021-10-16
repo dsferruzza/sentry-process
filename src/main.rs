@@ -25,7 +25,7 @@ fn main() {
     }
 }
 
-fn sentry_init(dsn: &str, program: &str, args: &[String]) -> sentry::internals::ClientInitGuard {
+fn sentry_init(dsn: &str, program: &str, args: &[String]) -> sentry::ClientInitGuard {
     static DEFAULT_SENTRY_PROCESS_NAME: &str = "sentry-process";
     static DEFAULT_SENTRY_PROCESS_VERSION: &str = "???";
 
@@ -42,7 +42,7 @@ fn sentry_init(dsn: &str, program: &str, args: &[String]) -> sentry::internals::
         dsn,
         sentry::ClientOptions {
             before_send: Some(std::sync::Arc::new(Box::new(
-                |mut event: sentry::internals::protocol::latest::Event<'static>| {
+                |mut event: sentry::protocol::Event<'static>| {
                     let packages = event.sdk.clone().map(|old_sdk| old_sdk.packages.clone());
                     let sdk: sentry::protocol::ClientSdkInfo = sentry::protocol::ClientSdkInfo {
                         name: option_env!("CARGO_PKG_NAME")

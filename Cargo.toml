@@ -21,6 +21,6 @@ codegen-units = 1
 rbl_circular_buffer = "0.1.2"
 
 [dependencies.sentry]
-version = "0.20.1"
+version = "0.23.0"
 default-features = false
 features = ["contexts", "panic", "reqwest", "rustls"]
