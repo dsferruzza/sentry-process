@@ -26,7 +26,7 @@ build:
 
 build_minimal:
   stage: build
-  image: rust:1.42
+  image: rust:1.46
   before_script:
     - rustc --version && cargo --version
   script:
