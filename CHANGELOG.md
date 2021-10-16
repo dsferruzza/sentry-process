@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Update dependencies (sentry: 0.20 → 0.23)
+
 ## 2.0.0
 
 - Add a circular buffer to keep STDOUT/STDERR data below Sentry's size limit and truncate the oldest output first
