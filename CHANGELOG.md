@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.1.0
 
 - Update dependencies (sentry: 0.20 → 0.26)
 
