@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Update dependencies (sentry: 0.20 → 0.23)
+- Update dependencies (sentry: 0.20 → 0.26)
 
 ## 2.0.0
 
