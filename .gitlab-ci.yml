@@ -1,6 +1,6 @@
 variables:
   DEBIAN_FRONTEND: noninteractive
-  RUST_VERSION: "1.55"
+  RUST_VERSION: "1.61"
 
 build:
   stage: build
@@ -26,7 +26,7 @@ build:
 
 build_minimal:
   stage: build
-  image: rust:1.46
+  image: rust:1.54
   before_script:
     - rustc --version && cargo --version
   script:

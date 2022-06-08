@@ -3,7 +3,7 @@
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![pipeline status](https://gitlab.com/dsferruzza/sentry-process/badges/master/pipeline.svg)](https://gitlab.com/dsferruzza/sentry-process/commits/master)
 [![Crates.io Version](https://img.shields.io/crates/v/sentry-process.svg)](https://crates.io/crates/sentry-process)
-[![Minimum rustc version](https://img.shields.io/badge/rustc-1.46+-lightgray.svg)](#rust-version-requirements)
+[![Minimum rustc version](https://img.shields.io/badge/rustc-1.54+-lightgray.svg)](#rust-version-requirements)
 [![Get help on Codementor](https://cdn.codementor.io/badges/get_help_github.svg)](https://www.codementor.io/dsferruzza?utm_source=github&utm_medium=button&utm_term=dsferruzza&utm_campaign=github)
 
 Report failed processes/scripts to Sentry.
@@ -30,7 +30,7 @@ The exit code, standard output and standard error of `COMMAND [ARGUMENTS]...` ar
 
 ## Rust Version Requirements
 
-Sentry Process needs Rust 1.46+ to be compiled.
+Sentry Process needs Rust 1.54+ to be compiled.
 
 ## Limitations
 
