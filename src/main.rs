@@ -52,7 +52,7 @@ fn sentry_init(dsn: &str, program: &str, args: &[String]) -> sentry::ClientInitG
                             .unwrap_or(DEFAULT_SENTRY_PROCESS_VERSION)
                             .to_owned(),
                         integrations: vec![],
-                        packages: packages.unwrap_or_else(Vec::new),
+                        packages: packages.unwrap_or_default(),
                     };
                     event.sdk.replace(std::borrow::Cow::Owned(sdk));
                     Some(event)
